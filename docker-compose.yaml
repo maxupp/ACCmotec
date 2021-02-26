@@ -35,4 +35,4 @@ services:
       MYSQL_USER: motec
       MYSQL_PASSWORD: motec4thepeople
     volumes:
-      - ./motec-data:/motec-data
+      - ../motec_data:/motec-data

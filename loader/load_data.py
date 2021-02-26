@@ -6,10 +6,8 @@ from pathlib import Path
 import time
 
 import xml.etree.ElementTree as ET
-import pandas as pd
 import numpy as np
-from sqlalchemy import create_engine
-import pymysql
+import pymysql.cursors
 
 from ldparser import ldHead, laps, laps_times
 
@@ -30,7 +28,7 @@ def get_fastest_lap_from_ld(ld_path):
 def read_motec_files(motec_path):
     motec_path = Path(motec_path)
 
-    meta_data = {}
+    meta_data = []
 
     # read files and process
     for name in glob.glob(str(motec_path / '*.ldx')):
@@ -59,46 +57,53 @@ def read_motec_files(motec_path):
             lap_time = np.diff(beacon_times).min()
             lap_time = datetime.datetime.fromtimestamp(lap_time/1000000.0)
     
-        meta_data[name] = {
+        meta_data.append({
+            'filename': name,
             'track': track,
             'car': car,
             'date': date,
             'time': time,
             'best_time': best_time,
             'best_lap': best_lap
-        }
+        })
 
-    return pd.DataFrame.from_dict(meta_data, orient='index')
+    return meta_data
 
 
 if __name__ == "__main__":
 
     # wait a while until db is up
-    time.sleep(10)
-
+    time.sleep(30)
+    print('Reading motec data...')
     motec_data = read_motec_files(os.environ['DATA_PATH'])
+    print(f'Read {len(motec_data)} motec files.')
 
-    connect_string = 'mysql+pymysql://{}:{}@{}/{}'.format(
-        os.environ['MYSQL_USER'],
-        os.environ['MYSQL_PASSWORD'],
-        os.environ['MYSQL_HOST'],
-        os.environ['MYSQL_DATABASE'],
+    connection = pymysql.connect(
+        host=os.environ['MYSQL_HOST'],
+        user=os.environ['MYSQL_USER'],
+        password=os.environ['MYSQL_PASSWORD'],
+        database=os.environ['MYSQL_DATABASE'],
+        cursorclass=pymysql.cursors.DictCursor
     )
 
-    engine = create_engine(connect_string, pool_recycle=3000)
-    connection = engine.connect()
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT filename FROM telemetry')
+            existing_files = [x['filename'] for x in cursor.fetchall()]
+            print(f'Fetched {len(existing_files)} records.')
+            
 
-    try:
-        frame = motec_data.to_sql(
-            'telemetry', 
-            connection,
-            flavor='mysql', 
-            if_exists='append', 
-            index=False)
-    except Exception as e:
-        print(e)
-    else:
-        print('Data loaded successfully.')
-    finally:
-        connection.close()
+        cnt = 0
+        for data in motec_data:
+            if data['filename'] in existing_files:
+                # discard telemetry that is in the DB already
+                continue
 
+            # insert new telemtry
+            cols = ['filename', 'track', 'car', 'date', 'time', 'best_time', 'best_lap']
+            col_string = ', '.join(cols)
+            value_string = ', '.join([data[x] for x in cols])
+            cursor.execute('INSERT INTO telemetry ({}) VALUES ({})'.format(col_string, value_string))
+            cnt += 1
+
+    print(f'Inserted {cnt} new records.')

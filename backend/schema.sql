@@ -1,7 +1,9 @@
-CREATE DATABASE motec_db;
+CREATE DATABASE IF NOT EXISTS motec_db;
 USE motec_db;
 
 GRANT SELECT, INSERT ON motec_db.* to motec;
+
+DROP TABLE IF EXISTS telemetry;
 
 CREATE TABLE telemetry
 (
@@ -14,4 +16,4 @@ CREATE TABLE telemetry
     best_time TEXT,
     best_lap TEXT, 
     PRIMARY KEY(id)
-)
+);
