@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: motec4thepeople
+      MYSQL_DATABASE: motec_db
+      MYSQL_USER: motec
+      MYSQL_PASSWORD: motec4thepeople
+    ports:
+      - "9906:3306"
+    volumes:
+      - ./backend/database:/var/lib/mysql
+  web:
+    image: php:8-apache
+    depends_on: 
+      - db
+    ports:
+      - "8100:80"
+    volumes:
+      - ./frontend/:/var/www/html/
+  loader:
+    build:
+      context: ./loader
+      dockerfile: Dockerfile
+    depends_on: 
+      - db
+    environment:
+      DATA_PATH: "/motec_data"
+      DB_HOST: localhost
+      MYSQL_DATABASE: motec_db
+      MYSQL_USER: motec
+      MYSQL_PASSWORD: motec4thepeople
+    volumes:
+      - ./motec-data:/motec-data
