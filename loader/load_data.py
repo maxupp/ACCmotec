@@ -3,12 +3,13 @@ import datetime
 import os
 import glob
 from pathlib import Path
+import time
 
 import xml.etree.ElementTree as ET
 import pandas as pd
 import numpy as np
-import mysql.connector
-from mysql.connector import Error
+from sqlalchemy import create_engine
+import pymysql
 
 from ldparser import ldHead, laps, laps_times
 
@@ -26,7 +27,7 @@ def get_fastest_lap_from_ld(ld_path):
     return fastest_time, fastest_lap
 
 
-def main(motec_path, db_connection):
+def read_motec_files(motec_path):
     motec_path = Path(motec_path)
 
     meta_data = {}
@@ -71,24 +72,33 @@ def main(motec_path, db_connection):
 
 
 if __name__ == "__main__":
+
+    # wait a while until db is up
+    time.sleep(10)
+
+    motec_data = read_motec_files(os.environ['DATA_PATH'])
+
+    connect_string = 'mysql+pymysql://{}:{}@{}/{}'.format(
+        os.environ['MYSQL_USER'],
+        os.environ['MYSQL_PASSWORD'],
+        os.environ['MYSQL_HOST'],
+        os.environ['MYSQL_DATABASE'],
+    )
+
+    engine = create_engine(connect_string, pool_recycle=3000)
+    connection = engine.connect()
+
     try:
-        connection = mysql.connector.connect(host=os.environ['DB_HOST'],
-                                             database=os.environ['MYSQL_DATABASE'],
-                                             user=os.environ['MYSQL_USER'],
-                                             password=os.environ['MYSQL_PASSWORD'])
-        if connection.is_connected():
-            db_Info = connection.get_server_info()
-            print("Connected to MySQL Server version ", db_Info)            
-            main(args['data_path'], connection)
-
-    except Error as e:
-        print("Error while connecting to database", e)
+        frame = motec_data.to_sql(
+            'telemetry', 
+            connection,
+            flavor='mysql', 
+            if_exists='append', 
+            index=False)
+    except Exception as e:
+        print(e)
+    else:
+        print('Data loaded successfully.')
     finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
-            print("MySQL connection is closed")
-
-
-    data = main(os.environ['DATA_PATH'], connection)
+        connection.close()
 

@@ -11,7 +11,7 @@ services:
       MYSQL_USER: motec
       MYSQL_PASSWORD: motec4thepeople
     ports:
-      - "9906:3306"
+      - "3306:3306"
     volumes:
       - ./backend/database:/var/lib/mysql
   web:
@@ -30,7 +30,7 @@ services:
       - db
     environment:
       DATA_PATH: "/motec_data"
-      DB_HOST: localhost
+      MYSQL_HOST: db
       MYSQL_DATABASE: motec_db
       MYSQL_USER: motec
       MYSQL_PASSWORD: motec4thepeople
