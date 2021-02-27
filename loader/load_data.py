@@ -58,7 +58,7 @@ def read_motec_files(motec_path):
             lap_time = datetime.datetime.fromtimestamp(lap_time/1000000.0)
     
         meta_data.append({
-            'filename': name,
+            'filename': name[:-4],
             'track': track,
             'car': car,
             'date': date,
@@ -103,10 +103,9 @@ if __name__ == "__main__":
                 cols = ['filename', 'track', 'car', 'date', 'time', 'best_time', 'best_lap']
                 col_string = ', '.join(cols)
                 value_string = ', '.join(['"' + str(data[x]) + '"' for x in cols])
-                print('INSERT INTO telemetry ({}) VALUES ({})'.format(col_string, value_string))
                 cursor.execute('INSERT INTO telemetry ({}) VALUES ({})'.format(col_string, value_string))
                 cnt += 1
-                
+
             connection.commit()
 
     print(f'Inserted {cnt} new records.')

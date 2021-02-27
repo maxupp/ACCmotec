@@ -25,6 +25,7 @@ services:
       - "443:443"
     volumes:
       - ./frontend/:/var/www/html/
+      - /mnt/projects/ACCmotec/motec_data:/var/www/html/motec_data
   loader:
     build:
       context: ./loader
