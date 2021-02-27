@@ -1,20 +1,12 @@
 <html>
 <body>
+<h1>Supercool Motec Server</h1>
 <?php 
 $username = "motec"; 
 $password = "motec4thepeople"; 
 $database = "motec_db"; 
-$mysqli = new mysqli("localhost", $username, $password, $database); 
+$mysqli = new mysqli("db", $username, $password, $database); 
 $query = "SELECT * FROM telemetry";
-
-'filename': name,
-'track': track,
-'car': car,
-'date': date,
-'time': time,
-'best_time': best_time,
-'best_lap': best_lap
-
 
 echo '<table border="0" cellspacing="2" cellpadding="2"> 
       <tr> 

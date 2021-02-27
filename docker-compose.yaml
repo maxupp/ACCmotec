@@ -15,11 +15,14 @@ services:
     volumes:
       - ./backend/database:/var/lib/mysql
   web:
-    image: php:8-apache
+    build:
+      context: frontend
+      dockerfile: Dockerfile
     depends_on: 
       - db
     ports:
-      - "8100:80"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./frontend/:/var/www/html/
   loader:
@@ -35,4 +38,4 @@ services:
       MYSQL_USER: motec
       MYSQL_PASSWORD: motec4thepeople
     volumes:
-      - ../motec_data:/motec-data
+      - /mnt/projects/ACCmotec/motec_data:/motec_data

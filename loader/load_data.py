@@ -92,18 +92,21 @@ if __name__ == "__main__":
             existing_files = [x['filename'] for x in cursor.fetchall()]
             print(f'Fetched {len(existing_files)} records.')
             
+        with connection.cursor() as cursor:
+            cnt = 0
+            for data in motec_data:
+                if data['filename'] in existing_files:
+                    # discard telemetry that is in the DB already
+                    continue
 
-        cnt = 0
-        for data in motec_data:
-            if data['filename'] in existing_files:
-                # discard telemetry that is in the DB already
-                continue
-
-            # insert new telemtry
-            cols = ['filename', 'track', 'car', 'date', 'time', 'best_time', 'best_lap']
-            col_string = ', '.join(cols)
-            value_string = ', '.join([data[x] for x in cols])
-            cursor.execute('INSERT INTO telemetry ({}) VALUES ({})'.format(col_string, value_string))
-            cnt += 1
+                # insert new telemtry
+                cols = ['filename', 'track', 'car', 'date', 'time', 'best_time', 'best_lap']
+                col_string = ', '.join(cols)
+                value_string = ', '.join(['"' + str(data[x]) + '"' for x in cols])
+                print('INSERT INTO telemetry ({}) VALUES ({})'.format(col_string, value_string))
+                cursor.execute('INSERT INTO telemetry ({}) VALUES ({})'.format(col_string, value_string))
+                cnt += 1
+                
+            connection.commit()
 
     print(f'Inserted {cnt} new records.')
