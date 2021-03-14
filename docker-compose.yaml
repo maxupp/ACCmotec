@@ -20,12 +20,13 @@ services:
       dockerfile: Dockerfile
     depends_on: 
       - db
-    ports:
-      - "80:80"
-      - "443:443"
+    expose:
+      - 80
     volumes:
       - ./frontend/:/var/www/html/
-      - /mnt/projects/ACCmotec/motec_data:/var/www/html/motec_data
+      - /var/lib/motec:/var/www/html/motec_data
+    environment:
+      VIRTUAL_HOST: motec.ascaroth.de
   loader:
     build:
       context: ./loader
@@ -39,4 +40,9 @@ services:
       MYSQL_USER: motec
       MYSQL_PASSWORD: motec4thepeople
     volumes:
-      - /mnt/projects/ACCmotec/motec_data:/motec_data
+      - /var/lib/motec:/motec_data
+
+networks:
+  default:
+    external:
+      name: nginx-proxy
