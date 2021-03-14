@@ -29,7 +29,7 @@ $username = "motec";
 $password = "motec4thepeople"; 
 $database = "motec_db"; 
 $mysqli = new mysqli("db", $username, $password, $database); 
-$query = "SELECT * FROM telemetry";
+$query = "SELECT * FROM telemetry ORDER BY track";
 
 echo '<table border="0" cellspacing="2" cellpadding="2"> 
       <tr> 
