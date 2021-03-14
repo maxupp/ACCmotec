@@ -1,5 +1,5 @@
 <?php
-$target_dir = "/motec_data/";
+$target_dir = "/var/www/html/motec_data/";
 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 $uploadOk = 1;
 $fileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
