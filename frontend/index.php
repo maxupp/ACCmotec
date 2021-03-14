@@ -1,6 +1,29 @@
 <html>
 <body>
-<h1>Supercool Motec Server</h1>
+<h1>ArisDrives Motec Server</h1>
+<p>
+    This is an effort to build an extensive collection of motec data for as many car/track combinations as possible.
+    If you would like to contribute, just zip you motec folder and upload it using the button below.
+</p>
+<!DOCTYPE html>
+<html>
+<body>
+
+<form action="upload.php" method="post" enctype="multipart/form-data">
+  Select .zip file to upload:
+  <input type="file" name="fileToUpload" id="fileToUpload">
+  <input type="submit" value="Upload Zipfile" name="submit">
+</form>
+
+</body>
+</html>
+
+<form action="https://www.paypal.com/donate" method="post" target="_top">
+<input type="hidden" name="hosted_button_id" value="RCTKH7F9FU77L" />
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
+</form>
+
 <?php 
 $username = "motec"; 
 $password = "motec4thepeople"; 
