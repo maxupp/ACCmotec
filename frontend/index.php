@@ -2,8 +2,10 @@
 <body>
 <h1>ArisDrives Motec Server</h1>
 <p>
-    This is an effort to build an extensive collection of motec data for as many car/track combinations as possible.
-    If you would like to contribute, just zip you motec folder and upload it using the button below.
+    This is an effort to build an extensive collection of motec data for as many car/track combinations as possible.    
+</p>
+<p>
+    If you would like to contribute, just zip your motec folder and upload it using the button below.
 </p>
 <!DOCTYPE html>
 <html>
