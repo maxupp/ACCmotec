@@ -34,7 +34,7 @@ def process_uploads(motec_path):
             to_extract = [n for n in motec_zip.namelist() if n.endswith(('ld', 'ldx'))]
 
             for p in to_extract:
-                motec_zip.extract(p, path=str(motec_path / Path(p).name))
+                motec_zip.extract(p, path=str(motec_path))
 
         # remove processed zip
         os.remove(str(motec_path / zipf))
