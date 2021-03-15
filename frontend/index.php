@@ -49,8 +49,14 @@ if ($result = $mysqli->query($query)) {
         $field1name = $row["track"];
         $field2name = $row["car"];
         $field3name = $row["date"];
-        $field4name = $row["time"]; 
-        $field5name = gmdate("i:s", $row["best_time"]); 
+        $field4name = $row["time"];
+
+        $whole = intval($row["best_time"]); 
+        $decimal1 = $row["best_time"] - $whole; 
+        $decimal2 = round($decimal1, 2);
+        $decimal = substr($decimal2, 1);
+
+        $field5name = gmdate("i:s", $row["best_time"]) . $decimal; 
         $field6name = $row["best_lap"];
         $field7name = $row["filename"] . '.ld';
         $field8name = $row["filename"] . '.ldx';
