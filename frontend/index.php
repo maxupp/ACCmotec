@@ -50,11 +50,10 @@ if ($result = $mysqli->query($query)) {
         $field2name = $row["car"];
         $field3name = $row["date"];
         $field4name = $row["time"]; 
-        $field5name = $row["best_time"]; 
+        $field5name = gmdate("i:s", $row["best_time"]); 
         $field6name = $row["best_lap"];
         $field7name = $row["filename"] . '.ld';
         $field8name = $row["filename"] . '.ldx';
-
 
         echo '<tr> 
                   <td>'.$field1name.'</td> 
