@@ -1,4 +1,7 @@
 <html>
+<head>
+    <link rel="stylesheet" href="style.css" type="text/css">
+</head>
 <body>
 <h1>ArisDrives Motec Server</h1>
 <p>
@@ -8,16 +11,12 @@
     If you would like to contribute, just zip your motec folder and upload it using the button below.
 </p>
 <!DOCTYPE html>
-<html>
-<body>
 <form action="upload.php" method="post" enctype="multipart/form-data">
   Select .zip file to upload:
   <input type="file" name="fileToUpload" id="fileToUpload">
   <input type="submit" value="Upload Zipfile" name="submit">
 </form>
 
-</body>
-</html>
 
 <form action="https://www.paypal.com/donate" method="post" target="_top">
 <input type="hidden" name="hosted_button_id" value="RCTKH7F9FU77L" />

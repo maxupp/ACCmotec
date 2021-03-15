@@ -1,0 +1,29 @@
+body {
+	color: #000;
+	font: 100%/30px 'Helvetica Neue', helvetica, arial, sans-serif;
+	text-shadow: 0 1px 0 #fff;
+}
+
+h1{
+  color: #000;
+	font: 30px 'Helvetica Neue', helvetica, arial, sans-serif;
+	text-align: center
+}
+
+table {
+	background: #fff;
+	font-size: 14px;
+	line-height: 24px;
+	margin: 30px left;
+	text-align: left;
+	width: 60%;
+}	
+
+td {
+	border-right: 1px solid #a2b2b2;
+	border-left: 1px solid #a2b2b2;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+	padding: 5px 10px;
+	position: relative;
+}
