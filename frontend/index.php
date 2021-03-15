@@ -37,7 +37,7 @@ echo '<table border="0" cellspacing="2" cellpadding="2">
           <td> <font face="Arial">Track</font> </td> 
           <td> <font face="Arial">Car</font> </td> 
           <td> <font face="Arial">Date</font> </td> 
-          <td> <font face="Arial">Time</font> </td> 
+          <td> <font face="Arial">Time of Day</font> </td> 
           <td> <font face="Arial">Best Laptime</font> </td> 
           <td> <font face="Arial">Best Lap</font> </td>
           <td> <font face="Arial">ld Download</font> </td> 
@@ -65,7 +65,7 @@ if ($result = $mysqli->query($query)) {
                   <td>'.$field2name.'</td> 
                   <td>'.$field3name.'</td> 
                   <td>'.$field4name.'</td> 
-                  <td>'.$field5name.'</td> 
+                  <td><b>'.$field5name.'</b></td> 
                   <td>'.$field6name.'</td> 
                   <td><a href="download.php?file='.$field7name.'">Download</a></td> 
                   <td><a href="download.php?file='.$field8name.'">Download</a></td> 
