@@ -71,7 +71,7 @@ def read_motec_files(motec_path):
             lap_time = datetime.datetime.fromtimestamp(lap_time/1000000.0)
     
         meta_data.append({
-            'filename': name[:-4],
+            'filename': Path(name).stem,
             'track': track,
             'car': car,
             'date': date,
