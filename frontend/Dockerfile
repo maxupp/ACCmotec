@@ -1,4 +1,4 @@
 FROM php:8-apache
-COPY default.ini /usr/local/etc/php/conf.d/custom.ini
+COPY custom.ini /usr/local/etc/php/conf.d/custom.ini
 RUN php -i
 RUN docker-php-ext-install mysqli
