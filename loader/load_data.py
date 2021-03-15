@@ -26,9 +26,9 @@ def get_fastest_lap_from_ld(ld_path):
 
 
 def process_uploads(motec_path):
-    for zipf in glob.glob(str(motec_path / '*.zip')):
+    for zipf in glob.glob(str(Path(motec_path) / '*.zip')):
         # extract the ldx and ld files
-        with ZipFile(str(motec_path / zipf)) as motec_zip:
+        with ZipFile(str(Path(motec_path) / zipf)) as motec_zip:
             to_extract = [x for x in x.namelist() if x.endswith(('ld', 'ldx'))]
 
             for p in to_extract:
