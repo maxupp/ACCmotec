@@ -1,5 +1,4 @@
 FROM php:8-apache
-RUN mkdir /var/www/html/motec_data
-RUN chmod a+rwx /var/www/html/motec_data
+COPY default.ini /usr/local/etc/php/conf.d/custom.ini
 RUN php -i
 RUN docker-php-ext-install mysqli
