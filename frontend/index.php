@@ -53,8 +53,7 @@ if ($result = $mysqli->query($query)) {
 
         $whole = intval($row["best_time"]); 
         $decimal1 = $row["best_time"] - $whole; 
-        $decimal2 = round($decimal1, 2);
-        $decimal = substr($decimal2, 1);
+        $decimal = substr($decimal1, 1, 2);
 
         $field5name = gmdate("i:s", $row["best_time"]) . $decimal; 
         $field6name = $row["best_lap"];
