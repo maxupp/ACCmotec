@@ -25,6 +25,19 @@ def get_fastest_lap_from_ld(ld_path):
     return fastest_time, fastest_lap
 
 
+def process_uploads(motec_path):
+    for zipf in glob.glob(str(motec_path / '*.zip')):
+        # extract the ldx and ld files
+        with ZipFile(str(motec_path / zipf)) as motec_zip:
+            to_extract = [x for x in x.namelist() if x.endswith(('ld', 'ldx'))]
+
+            for p in to_extract:
+                motec_zip.extract(p, path=str(motec_path / Path(p).name))
+
+        # remove processed zip
+        os.remove(str(motec_path / zipf))
+
+
 def read_motec_files(motec_path):
     motec_path = Path(motec_path)
 
@@ -74,6 +87,9 @@ if __name__ == "__main__":
 
     # wait a while until db is up
     time.sleep(30)
+    print('Processing new uploads...')
+    process_uploads(os.environ['DATA_PATH'])
+
     print('Reading motec data...')
     motec_data = read_motec_files(os.environ['DATA_PATH'])
     print(f'Read {len(motec_data)} motec files.')
