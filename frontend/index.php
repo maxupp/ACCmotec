@@ -8,7 +8,7 @@
     This is an effort to build an extensive collection of motec data for as many car/track combinations as possible.    
 </p>
 <p>
-    If you would like to contribute, just zip your motec folder and upload it using the button below.
+    If you would like to contribute, just zip your motec folder and upload it using the button below. (".ld" and ".ldx" files must not be renamed in order for the server to process them.)
 </p>
 <!DOCTYPE html>
 <form action="upload.php" method="post" enctype="multipart/form-data">
