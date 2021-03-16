@@ -6,16 +6,41 @@ from pathlib import Path
 from zipfile import ZipFile
 import time
 
-import xml.etree.ElementTree as ET
 import numpy as np
 import pymysql.cursors
 
 from ldparser import ldHead, laps, laps_times
 
 
-def get_fastest_lap_from_ld(ld_path):
+def get_fastest_lap_from_ld(ld_path, track):
     head = ldHead.fromfile(open(ld_path, 'rb'))
     laps_ = laps_times(np.array(laps(ld_path)))
+
+    # TODO: Filter out laptimes that are obviously too low
+    min_times = {
+        'barcelona': 100,
+        'brands_hatch': 80,
+        'donington': 82,
+        'hungaroring': 100,
+        'imola': 95,
+        'kyalami': 96,
+        'laguna_seca': 78,
+        'misano': 90,
+        'monza': 103,
+        'mount_panorama': 115,
+        'nurburgring': 110,
+        'paul_ricard': 90,
+        'snetterton': 100,
+        'spa': 130,
+        'silverstone': 113,
+        'oulton_park': 90,
+        'suzuka': 115,
+        'zandvoort': 92,
+        'zolder': 85
+    }
+
+    min_time = min_times[track.lower()]
+    laps_ = [x for x in laps_ if x > min_time]
 
     if len(laps_) < 1:
         return None, None
@@ -48,29 +73,16 @@ def read_motec_files(motec_path):
     # read files and process
     for name in glob.glob(str(motec_path / '*.ldx')):
 
+        # extract meta info from file name
+        track, car, weird_number, date, time = Path(name).stem.split('-')
+
         # load ld file
-        best_time, best_lap = get_fastest_lap_from_ld(str(motec_path / Path(name).stem) + '.ld')
+        best_time, best_lap = get_fastest_lap_from_ld(str(motec_path / Path(name).stem) + '.ld', track)
         if best_time is None:
             # No valid laps in this motec log
             continue
 
-        # extract meta info from file name
-        track, car, weird_number, date, time = Path(name).stem.split('-')
         time = time.replace('.', ':')
-
-        tree = ET.parse(name)
-        detail_block = tree.find('.//Details')
-        if detail_block:
-            # extract info from detail block
-            lap_time = tree.find(".//String[@Id ='Fastest Time']").get('Value')
-        else:
-            # infer lap times from markers
-            beacon_times = [0.] + [float(x.get('Time')) for x in tree.findall(".//Marker")]
-            if len(beacon_times) < 2:
-                continue
-            # calculate lap time
-            lap_time = np.diff(beacon_times).min()
-            lap_time = datetime.datetime.fromtimestamp(lap_time/1000000.0)
     
         meta_data.append({
             'filename': Path(name).stem,
@@ -88,7 +100,7 @@ def read_motec_files(motec_path):
 if __name__ == "__main__":
 
     # wait a while until db is up
-    time.sleep(30)
+    # time.sleep(30)
     print('Processing new uploads...')
     process_uploads(os.environ['DATA_PATH'])
 
