@@ -9,9 +9,9 @@
 </p>
 <p>
     If you would like to contribute, just zip your motec folder and upload it using the button below. <br>
-    The loader relies upon the .ld file not being renamed, otherwise they will be ignored.
+    The loader relies upon the .ld file not being renamed and having an ldx file with same name present as well. Otherwise they will be ignored.
     <br>
-    For the time being there is a size fimit of 500MB due to limitations in hosting and bandwidth.
+    For the time being there is a size limit of 500MB due to limitations in hosting and bandwidth.
 </p>
 <!DOCTYPE html>
 <form action="upload.php" method="post" enctype="multipart/form-data">
@@ -45,6 +45,7 @@ echo '<table border="0" cellspacing="2" cellpadding="2">
           <td> <font face="Arial">Best Laptime</font> </td> 
           <td> <font face="Arial">Best Lap</font> </td>
           <td> <font face="Arial">Motec Download</font> </td>
+          <td> <font face="Arial">LDX Download</font> </td>
       </tr>';
 
 if ($result = $mysqli->query($query)) {
@@ -61,6 +62,7 @@ if ($result = $mysqli->query($query)) {
         $field5name = gmdate("i:s", $row["best_time"]) . $decimal; 
         $field6name = $row["best_lap"];
         $field7name = $row["filename"] . '.ld';
+        $field8name = $row["filename"] . '.ldx';
 
         echo '<tr> 
                   <td>'.$field1name.'</td> 
@@ -70,6 +72,7 @@ if ($result = $mysqli->query($query)) {
                   <td><b>'.$field5name.'</b></td> 
                   <td>'.$field6name.'</td> 
                   <td><a href="download.php?file='.$field7name.'">Download</a></td>
+                  <td><a href="download.php?file='.$field8name.'">Download</a></td>
               </tr>';
     }
     $result->free();

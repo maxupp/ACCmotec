@@ -54,7 +54,7 @@ def get_fastest_lap_from_ld(ld_path, track):
 def process_uploads(motec_path):
     motec_path = Path(motec_path)
     for zipf in glob.glob(str(motec_path / '*.zip')):
-        # extract the ldx and ld files
+        # extract ld files
         with ZipFile(str(motec_path / zipf)) as motec_zip:
             to_extract = [n for n in motec_zip.namelist() if n.endswith('ld')]
 
@@ -72,6 +72,10 @@ def read_motec_files(motec_path):
 
     # read files and process
     for name in glob.glob(str(motec_path / '*.ld')):
+        ldx_name = os.path.splitext(name)[0]+".ldx"
+        if not os.path.isfile(ldx_name):
+            print(f'Missing ldx file for : {name}')
+            continue
 
         # extract meta info from file name
         try:
