@@ -100,7 +100,7 @@ def read_motec_files(motec_path):
 if __name__ == "__main__":
 
     # wait a while until db is up
-    # time.sleep(30)
+    time.sleep(30)
     print('Processing new uploads...')
     process_uploads(os.environ['DATA_PATH'])
 
