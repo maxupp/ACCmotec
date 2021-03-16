@@ -9,12 +9,14 @@
 </p>
 <p>
     If you would like to contribute, just zip your motec folder and upload it using the button below. (".ld" and ".ldx" files must not be renamed in order for the server to process them.)
+    <br>
+    For the time being there is a size fimit of 500MB due to limitations in hosting and bandwidth.
 </p>
 <!DOCTYPE html>
 <form action="upload.php" method="post" enctype="multipart/form-data">
   Select .zip file to upload:
   <input type="file" name="fileToUpload" id="fileToUpload">
-  <input type="submit" value="Upload Zipfile" name="submit">
+  <input type="submit" value="Start Upload" name="submit">
 </form>
 
 
@@ -23,6 +25,7 @@
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
 <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
 </form>
+Donations go towards hosting and maintenance. And ACC DLC.
 
 <?php 
 $username = "motec"; 
