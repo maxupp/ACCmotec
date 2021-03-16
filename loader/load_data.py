@@ -56,7 +56,7 @@ def process_uploads(motec_path):
     for zipf in glob.glob(str(motec_path / '*.zip')):
         # extract the ldx and ld files
         with ZipFile(str(motec_path / zipf)) as motec_zip:
-            to_extract = [n for n in motec_zip.namelist() if n.endswith(('ld', 'ldx'))]
+            to_extract = [n for n in motec_zip.namelist() if n.endswith('ld')]
 
             for p in to_extract:
                 motec_zip.extract(p, path=str(motec_path))
@@ -71,7 +71,7 @@ def read_motec_files(motec_path):
     meta_data = []
 
     # read files and process
-    for name in glob.glob(str(motec_path / '*.ldx')):
+    for name in glob.glob(str(motec_path / '*.ld')):
 
         # extract meta info from file name
         try:
@@ -81,7 +81,7 @@ def read_motec_files(motec_path):
             continue
 
         # load ld file
-        best_time, best_lap = get_fastest_lap_from_ld(str(motec_path / Path(name).stem) + '.ld', track)
+        best_time, best_lap = get_fastest_lap_from_ld(motec_path / name, track)
         if best_time is None:
             # No valid laps in this motec log
             continue
