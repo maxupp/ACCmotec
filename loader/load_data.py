@@ -74,7 +74,11 @@ def read_motec_files(motec_path):
     for name in glob.glob(str(motec_path / '*.ldx')):
 
         # extract meta info from file name
-        track, car, weird_number, date, time = Path(name).stem.split('-')
+        try:
+            track, car, weird_number, date, time = Path(name).stem.split('-')
+        except:
+            print(f'Unreadable filename: {name}')
+            continue
 
         # load ld file
         best_time, best_lap = get_fastest_lap_from_ld(str(motec_path / Path(name).stem) + '.ld', track)
