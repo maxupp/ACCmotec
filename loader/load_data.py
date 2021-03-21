@@ -56,7 +56,7 @@ def process_uploads(motec_path):
     for zipf in glob.glob(str(motec_path / '*.zip')):
         # extract ld files
         with ZipFile(str(motec_path / zipf)) as motec_zip:
-            to_extract = [n for n in motec_zip.namelist() if n.endswith('ld')]
+            to_extract = [n for n in motec_zip.namelist() if n.endswith(('ld', 'ldx'))]
 
             for p in to_extract:
                 motec_zip.extract(p, path=str(motec_path))
