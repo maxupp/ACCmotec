@@ -1,6 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="style.css" type="text/css">
+    <link rel="stylesheet" href="style.css" >
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" >
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" >
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" >
 </head>
 <body>
 <h1>ArisDrives Motec Server</h1>
@@ -13,7 +18,7 @@
     <br>
     For the time being there is a size limit of 500MB due to limitations in hosting and bandwidth.
 </p>
-<!DOCTYPE html>
+
 <form action="upload.php" method="post" enctype="multipart/form-data">
   Select .zip file to upload:
   <input type="file" name="fileToUpload" id="fileToUpload">
@@ -26,27 +31,29 @@
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
 <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
 </form>
-Donations go towards hosting and maintenance. And ACC DLC.
+<p>Donations go towards hosting and maintenance. And ACC DLC.</p>
 
+<table id="motecData" class="table is-striped table-bordered" style="width:100%">
+    <thead>
+      <tr> 
+          
+          <td> Track </td> 
+          <td> Car </td> 
+          <td> Date </td> 
+          <td> Time of Day </td> 
+          <td> Best Laptime </td> 
+          <td> Best Lap </td>
+          <td> Motec Download </td>
+          <td> LDX Download </td>
+      </tr>
+    </thead>
+    <tbody>
 <?php 
 $username = "motec"; 
 $password = "motec4thepeople"; 
 $database = "motec_db"; 
 $mysqli = new mysqli("db", $username, $password, $database); 
 $query = "SELECT * FROM telemetry ORDER BY track";
-
-echo '<table border="0" cellspacing="2" cellpadding="2"> 
-      <tr> 
-          
-          <td> <font face="Arial">Track</font> </td> 
-          <td> <font face="Arial">Car</font> </td> 
-          <td> <font face="Arial">Date</font> </td> 
-          <td> <font face="Arial">Time of Day</font> </td> 
-          <td> <font face="Arial">Best Laptime</font> </td> 
-          <td> <font face="Arial">Best Lap</font> </td>
-          <td> <font face="Arial">Motec Download</font> </td>
-          <td> <font face="Arial">LDX Download</font> </td>
-      </tr>';
 
 if ($result = $mysqli->query($query)) {
     while ($row = $result->fetch_assoc()) {
@@ -78,5 +85,28 @@ if ($result = $mysqli->query($query)) {
     $result->free();
 } 
 ?>
+</tbody>
+<tfoot>
+      <tr> 
+          
+          <td> Track </td> 
+          <td> Car </td> 
+          <td> Date </td> 
+          <td> Time of Day </td> 
+          <td> Best Laptime </td> 
+          <td> Best Lap </td>
+          <td> Motec Download </td>
+          <td> LDX Download </td>
+      </tr>
+</tfoot>
+</table>
+<!-- This is where the jQuery should be placed  -->
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready( function () {
+    $('#motecData').DataTable();
+} );
+</script>
 </body>
 </html>
