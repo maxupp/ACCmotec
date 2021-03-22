@@ -105,7 +105,7 @@ if ($result = $mysqli->query($query)) {
 <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready( function () {
-    $('#motecData').DataTable();
+    $('#motecData').DataTable({ pageLength: 15 });
 } );
 </script>
 </body>
