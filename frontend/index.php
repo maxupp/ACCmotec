@@ -16,7 +16,7 @@
     If you would like to contribute, just zip your motec folder and upload it using the button below. <br>
     The loader relies upon the .ld file not being renamed and having an ldx file with same name present as well. Otherwise they will be ignored.
     <br>
-    For the time being there is a size limit of 500MB due to limitations in hosting and bandwidth.
+    For the time being there is a size limit of <strong><?php echo ini_get('post_max_size'); ?></strong> due to limitations in hosting and bandwidth.
 </p>
 
 <form action="upload.php" method="post" enctype="multipart/form-data">
