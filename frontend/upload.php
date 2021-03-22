@@ -10,6 +10,22 @@ function generateRandomZipfile($length = 10) {
   return $randomString . '.zip';
 }
 
+function return_bytes($val) {
+  $val = trim($val);
+  $last = strtolower($val[strlen($val)-1]);
+  $bytes = intval($val);
+  switch($last) {
+      // The 'G' modifier is available since PHP 5.1.0
+      case 'g':
+        $bytes *= 1024;
+      case 'm':
+        $bytes *= 1024;
+      case 'k':
+        $bytes *= 1024;
+  }
+
+  return $bytes;
+}
 $target_dir = "/srv/motec_data/";
 $target_file = $target_dir . generateRandomZipfile();
 $uploadOk = 1;
@@ -23,7 +39,7 @@ if (file_exists($target_file)) {
 }
 
 // Check file size
-if ($_FILES["fileToUpload"]["size"] > 50000000) {
+if ($_FILES["fileToUpload"]["size"] > return_bytes(ini_get('post_max_size'))) {  //500Mb  - 524288000
   echo "Sorry, your file is too large.";
   $uploadOk = 0;
 }
