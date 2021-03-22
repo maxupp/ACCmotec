@@ -41,6 +41,7 @@ services:
       MYSQL_PASSWORD: motec4thepeople
     volumes:
       - /var/lib/motec:/motec_data
+      - /var/log/:/var/log/
 
 networks:
   default:

@@ -1,6 +1,7 @@
 import argparse
 import datetime
 import os
+import logging
 import glob
 from pathlib import Path
 from zipfile import ZipFile
@@ -11,6 +12,9 @@ import pymysql.cursors
 
 from ldparser import ldHead, laps, laps_times
 
+logging.basicConfig(filename='/var/log/motec_loader.log',level=logging.INFO,
+        format='%(asctime)s : %(message)s',
+        datefmt='%d.%m.%Y %I:%M:%S %p')
 
 def get_fastest_lap_from_ld(ld_path, track):
     head = ldHead.fromfile(open(ld_path, 'rb'))
@@ -54,15 +58,16 @@ def get_fastest_lap_from_ld(ld_path, track):
 def process_uploads(motec_path):
     motec_path = Path(motec_path)
     for zipf in glob.glob(str(motec_path / '*.zip')):
+        logging.info(f'Processing {zipf}')
         # extract ld files
         with ZipFile(str(motec_path / zipf)) as motec_zip:
             to_extract = [n for n in motec_zip.namelist() if n.endswith(('ld', 'ldx'))]
-
+            logging.info(f'Found {len(to_extract)}')
             for p in to_extract:
                 motec_zip.extract(p, path=str(motec_path))
 
         # remove processed zip
-        os.remove(str(motec_path / zipf))
+        # os.remove(str(motec_path / zipf))
 
 
 def read_motec_files(motec_path):
@@ -74,14 +79,14 @@ def read_motec_files(motec_path):
     for name in glob.glob(str(motec_path / '*.ld')):
         ldx_name = os.path.splitext(name)[0]+".ldx"
         if not os.path.isfile(ldx_name):
-            print(f'Missing ldx file for : {name}')
+            logging.warning(f'Missing ldx file for : {name}')
             continue
 
         # extract meta info from file name
         try:
             track, car, weird_number, date, time = Path(name).stem.split('-')
         except:
-            print(f'Unreadable filename: {name}')
+            logging.warning(f'Unreadable filename: {name}')
             continue
 
         # load ld file
@@ -108,13 +113,14 @@ def read_motec_files(motec_path):
 if __name__ == "__main__":
 
     # wait a while until db is up
-    time.sleep(30)
-    print('Processing new uploads...')
+    if not os.environ['NO_WAIT']:
+        time.sleep(30)
+    logging.info('Processing new uploads...')
     process_uploads(os.environ['DATA_PATH'])
 
-    print('Reading motec data...')
+    logging.info('Reading motec data...')
     motec_data = read_motec_files(os.environ['DATA_PATH'])
-    print(f'Read {len(motec_data)} motec files.')
+    logging.info(f'Read {len(motec_data)} motec files.')
 
     connection = pymysql.connect(
         host=os.environ['MYSQL_HOST'],
@@ -128,7 +134,7 @@ if __name__ == "__main__":
         with connection.cursor() as cursor:
             cursor.execute('SELECT filename FROM telemetry')
             existing_files = [x['filename'] for x in cursor.fetchall()]
-            print(f'Fetched {len(existing_files)} records.')
+            logging.info(f'Fetched {len(existing_files)} records.')
             
         with connection.cursor() as cursor:
             cnt = 0
@@ -146,4 +152,4 @@ if __name__ == "__main__":
 
             connection.commit()
 
-    print(f'Inserted {cnt} new records.')
+    logging.info(f'Inserted {cnt} new records.')
