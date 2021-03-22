@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" >
 </head>
 <body>
+    <div id="container" class="jumbotron">
 <h1>ArisDrives Motec Server</h1>
 <p>
     This is an effort to build an extensive collection of motec data for as many car/track combinations as possible.    
@@ -18,21 +19,20 @@
     <br>
     For the time being there is a size limit of <strong><?php echo ini_get('post_max_size'); ?></strong> due to limitations in hosting and bandwidth.
 </p>
-
 <form action="upload.php" method="post" enctype="multipart/form-data">
-  Select .zip file to upload:
-  <input type="file" name="fileToUpload" id="fileToUpload">
-  <input type="submit" value="Start Upload" name="submit">
+Select .zip file to upload:
+<input type="file" class="btn btn-success" name="fileToUpload" id="fileToUpload">
+<input type="submit" class="btn btn-primary" value="Start Upload" name="submit">
 </form>
+</div>  <!-- div id=container -->
 
-
-<form action="https://www.paypal.com/donate" method="post" target="_top">
-<input type="hidden" name="hosted_button_id" value="RCTKH7F9FU77L" />
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-<img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
-</form>
-<p>Donations go towards hosting and maintenance. And ACC DLC.</p>
-
+<div id="donate">
+    <form action="https://www.paypal.com/donate" method="post" target="_top">
+        Donations go towards hosting and maintenance. And ACC DLC. <input type="hidden" name="hosted_button_id" value="RCTKH7F9FU77L" />
+    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+    <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
+    </form>
+</div> <!-- div id=donate -->
 <table id="motecData" class="table is-striped table-bordered" style="width:100%">
     <thead>
       <tr> 
@@ -105,7 +105,7 @@ if ($result = $mysqli->query($query)) {
 <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready( function () {
-    $('#motecData').DataTable({ pageLength: 15 });
+    $('#motecData').DataTable({ pageLength: 25 });
 } );
 </script>
 </body>

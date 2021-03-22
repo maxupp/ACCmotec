@@ -10,6 +10,16 @@ body {
 h1{
   color: #000;
 	font: 30px 'Helvetica Neue', helvetica, arial, sans-serif;
-	text-align: center
+	text-align: center;
 }
 
+.jumbotron {
+	margin-top: 10px;
+	text-align: center;
+}
+
+#donate {
+	float: right;
+	text-align: right;
+	width: 600px;
+}
