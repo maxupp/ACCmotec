@@ -28,37 +28,45 @@ function return_bytes($val) {
 }
 $target_dir = "/srv/motec_data/";
 $target_file = $target_dir . generateRandomZipfile();
+$upload = 'err';
+$allowTypes = array('zip');
 $uploadOk = 1;
 $fileType = strtolower(pathinfo(basename($_FILES["fileToUpload"]["name"]), PATHINFO_EXTENSION));
 
 
 // Check if file already exists
 if (file_exists($target_file)) {
-  echo "Sorry, file already exists.";
+  //echo "Sorry, file already exists.";
   $uploadOk = 0;
 }
 
 // Check file size
 if ($_FILES["fileToUpload"]["size"] > return_bytes(ini_get('post_max_size'))) {  //500Mb  - 524288000
-  echo "Sorry, your file is too large.";
+  //echo "Sorry, your file is too large.";
   $uploadOk = 0;
 }
 
 // Allow certain file formats
 if($fileType != "zip") {
-  echo "File format not supported, please supply zip file.";
+  //echo "File format not supported, please supply zip file.";
   $uploadOk = 0;
 }
 
 // Check if $uploadOk is set to 0 by an error
 if ($uploadOk == 0) {
-  echo "Sorry, your file was not uploaded.";
+  //echo "Sorry, your file was not uploaded.";
+  $upload = 'err';
 // if everything is ok, try to upload file
 } else {
-  if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-    echo "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be processed and available shortly. Thank you for your contribution!";
-  } else {
-    echo "Sorry, there was an error uploading your file.";
+  if(in_array($fileType, $allowTypes)) {
+    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+      $upload = 'ok';
+      //echo "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be processed and available shortly. Thank you for your contribution!";
+    } else {
+      $upload = 'err';
+      //echo "Sorry, there was an error uploading your file.";
+    }
   }
 }
+echo $upload;
 ?>

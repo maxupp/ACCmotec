@@ -19,12 +19,17 @@
     <br>
     For the time being there is a size limit of <strong><?php echo ini_get('post_max_size'); ?></strong> due to limitations in hosting and bandwidth.
 </p>
-<form action="upload.php" method="post" enctype="multipart/form-data">
+<form action="upload.php" method="post" enctype="multipart/form-data" id="uploadForm">
 Select .zip file to upload:
 <input type="file" class="btn btn-success" name="fileToUpload" id="fileToUpload">
-<input type="submit" class="btn btn-primary" value="Start Upload" name="submit">
-</form>
+<input type="submit" class="btn btn-primary" value="Start Upload" name="submit" >
+</form><!-- Display upload status -->
+<div id="uploadStatus"></div>
 </div>  <!-- div id=container -->
+<!-- Progress bar -->
+<div class="progress">
+    <div class="progress-bar"></div>
+</div>
 
 <div id="donate">
     <form action="https://www.paypal.com/donate" method="post" target="_top">
@@ -107,6 +112,63 @@ if ($result = $mysqli->query($query)) {
     $(document).ready( function () {
     $('#motecData').DataTable({ pageLength: 25 });
 } );
+
+$(document).ready(function(){
+    $('.progress').hide();
+    $('#uploadStatus').empty();
+    // File upload via Ajax
+    $("#uploadForm").on('submit', function(e){
+        e.preventDefault();
+        $('.progress').show();
+        $('#uploadStatus').empty();
+        $.ajax({
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = Math.round(((evt.loaded / evt.total) * 100));
+                        $(".progress-bar").width(percentComplete + '%');
+                        $(".progress-bar").html(percentComplete+'%');
+                    }
+                }, false);
+                return xhr;
+            },
+            type: 'POST',
+            url: 'upload.php',
+            data: new FormData(this),
+            contentType: false,
+            cache: false,
+            processData:false,
+            beforeSend: function(){
+                $(".progress-bar").width('0%');
+            },
+            error:function(){
+                $('#uploadStatus').html('<p style="color:#EA4335;">File upload failed, please try again.</p>');
+            },
+            success: function(resp){
+                if(resp == 'ok'){
+                    $('#uploadForm')[0].reset();
+                    $('#uploadStatus').html('<p style="color:#28A74B;">File has uploaded successfully!  Your file will be verified and added to the dB shorttly.  Thank you.</p>');
+                    $('.progress').hide();
+                }else if(resp == 'err'){
+                    $('#uploadStatus').html('<p style="color:#EA4335;">Please select a valid file to upload.</p>');
+                }
+            }
+        });
+    });
+	
+    // File type validation
+    $("#fileToUpload").change(function(){
+        var allowedTypes = ['application/zip'];
+        var file = this.files[0];
+        var fileType = file.type;
+        if(!allowedTypes.includes(fileType)){
+            alert('Please select a valid file (ZIP).');
+            $("#fileToUpload").val('');
+            return false;
+        }
+    });
+});
 </script>
 </body>
 </html>
