@@ -139,19 +139,20 @@ $(document).ready(function(){
             contentType: false,
             cache: false,
             processData:false,
+            dataType: "json",
             beforeSend: function(){
                 $(".progress-bar").width('0%');
             },
             error:function(){
                 $('#uploadStatus').html('<p style="color:#EA4335;">File upload failed, please try again.</p>');
             },
-            success: function(resp){
-                if(resp == 'ok'){
+            success: function(data){
+                if(data.response == 'ok'){
                     $('#uploadForm')[0].reset();
-                    $('#uploadStatus').html('<p style="color:#28A74B;">File has uploaded successfully!  Your file will be verified and added to the dB shorttly.  Thank you.</p>');
+                    $('#uploadStatus').html('<p style="color:#28A74B;">' + data.message + '</p>');
                     $('.progress').hide();
-                }else if(resp == 'err'){
-                    $('#uploadStatus').html('<p style="color:#EA4335;">Please select a valid file to upload.</p>');
+                }else if(data.response == 'err'){
+                    $('#uploadStatus').html('<p style="color:#EA4335;">' + data.message + '</p>');
                 }
             }
         });
