@@ -47,6 +47,7 @@ if (file_exists($target_file)) {
 // Check file size
 if ($_FILES["fileToUpload"]["size"] > return_bytes(ini_get('post_max_size'))) {  //500Mb  - 524288000
   $status['message'] = "Sorry, your file is too large.";
+
   $uploadOk = 0;
 }
 
@@ -75,3 +76,4 @@ header('Access-Control-Allow-Origin: *');
 header('Content-type: application/json');
 echo json_encode($status);
 ?>
+
