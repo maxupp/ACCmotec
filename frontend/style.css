@@ -4,11 +4,40 @@ body {
 	text-shadow: 0 1px 0 #fff;
 	margin-left: 20px;
 	padding-left: 40px;
+	padding-right: 40px;
 }
 
-h1{
-  color: #000;
-	font: 30px 'Helvetica Neue', helvetica, arial, sans-serif;
-	text-align: center
+.motec{
+  color: #fff;
+	font: 60px 'Helvetica Neue', helvetica, arial, sans-serif;
+	text-align: center;
 }
 
+.jumbotron {
+	margin-top: 10px;
+	text-align: center;
+}
+
+#donate {
+	float: right;
+	text-align: right;
+	width: 600px;
+}
+
+.logo-bg {
+
+	background-color: #000;
+}
+
+.pos-left {
+	float: left;
+}
+
+.pos-right {
+	float: right;
+}
+
+.clearfix::after {
+	content: "";
+	clear: both;
+}
