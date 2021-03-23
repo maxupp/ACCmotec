@@ -83,8 +83,8 @@ if ($result = $mysqli->query($query)) {
                   <td>'.$field4name.'</td> 
                   <td><b>'.$field5name.'</b></td> 
                   <td>'.$field6name.'</td> 
-                  <td><a href="download.php?file='.$field7name.'">Download</a></td>
-                  <td><a href="download.php?file='.$field8name.'">Download</a></td>
+                  <td><a class="btn btn-info" href="download.php?file='.$field7name.'">Download</a></td>
+                  <td><a class="btn btn-info" href="download.php?file='.$field8name.'">Download</a></td>
               </tr>';
     }
     $result->free();
