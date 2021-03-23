@@ -9,7 +9,8 @@
 </head>
 <body>
     <div id="container" class="jumbotron">
-<h1>ArisDrives Motec Server</h1>
+    <div class="logo-bg clearfix"><img src="https://www.assettocorsa.it/competizione/wp-content/themes/fosfostrap/_style/build/img/gtwc.png" width="140" height="80" class="logo-bg pos-left"> <span class="motec">ArisDrives Motec Server</span>
+    <img src="https://www.assettocorsa.it/competizione/wp-content/themes/fosfostrap/_style/build/img/logo-acc-gtwc.png" width="250" height="80"  class="logo-bg pos-right"></div>
 <p>
     This is an effort to build an extensive collection of motec data for as many car/track combinations as possible.    
 </p>
