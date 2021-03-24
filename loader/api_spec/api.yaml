@@ -1,0 +1,42 @@
+openapi: "3.0.0"
+info:
+  description: "Data wrangling server for MOTEC infrastructure"
+  version: "1.0.0"
+  title: "Motec Wrangler"
+
+paths:
+  /process_zip:
+    post:
+      summary: "Signal the server about the arrival of a new zipfile"
+      description: ""
+      operationId: "process_uploaded_zip"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: body
+              $ref: '#/components/schemas/ProcessZipBody'
+      responses:
+        '200':
+          description: Successful Request, files may still have failed
+          content:
+            application/json:
+              schema:
+                x-bofy-name: process_result
+                $ref: '#/components/schemas/ProcessZipResponse'
+
+components:
+  schemas:
+    ProcessZipBody:
+      type: object
+      properties:
+        filename:
+          type: string
+    ProcessZipResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        report:
+          type: string

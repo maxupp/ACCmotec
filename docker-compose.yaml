@@ -25,6 +25,7 @@ services:
     volumes:
       - ./frontend/:/var/www/html/
       - /var/lib/motec:/srv/motec_data
+      - /var/lib/motec_upload:/uploads
     environment:
       VIRTUAL_HOST: motec.ascaroth.de
   loader:
@@ -34,7 +35,8 @@ services:
     depends_on: 
       - db
     environment:
-      DATA_PATH: "/motec_data"
+      MOTEC_PATH: "/motec_data"
+      UPLOADS_PATH: "/uploads"
       MYSQL_HOST: db
       MYSQL_DATABASE: motec_db
       MYSQL_USER: motec
@@ -42,6 +44,7 @@ services:
     volumes:
       - /var/lib/motec:/motec_data
       - /var/log/:/var/log/
+      - /var/lib/motec_upload:/uploads
 
 networks:
   default:
