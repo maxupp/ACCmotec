@@ -161,11 +161,12 @@ $(document).ready(function(){
 	
     // File type validation
     $("#fileToUpload").change(function(){
-        var allowedTypes = ['application/zip'];
+	var allowedTypes = ['application/zip', 'application/x-zip-compressed'];
         var file = this.files[0];
-        var fileType = file.type;
+	var fileType = file.type;
+	console.log(fileType);
         if(!allowedTypes.includes(fileType)){
-            alert('Please select a valid file (ZIP).');
+            alert('Filetype not supported: ' + fileType);
             $("#fileToUpload").val('');
             return false;
         }
