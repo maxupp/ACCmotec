@@ -117,7 +117,7 @@ if ($result = $mysqli->query($query)) {
 $(document).ready(function() {
     $('#motecData').DataTable( {
         initComplete: function () {
-            this.api().columns().every( function () {
+            this.api().columns([0, 1]).every( function () {
                 var column = this;
                 var select = $('<select><option value=""></option></select>')
                     .appendTo( $(column.footer()).empty() )
