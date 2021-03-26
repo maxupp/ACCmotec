@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="style.css" >
+    <meta charset="utf-8">
+    <title>ArisDrives Motec Server</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
+    <link rel="manifest" href="icon/site.webmanifest">
+
+    <link rel="stylesheet" href="css/style.css" >
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" >
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" >
@@ -9,10 +16,10 @@
 </head>
 <body>
     <div id="container" class="jumbotron">
-    <div class="logo-bg clearfix"><img src="https://www.assettocorsa.it/competizione/wp-content/themes/fosfostrap/_style/build/img/gtwc.png" width="140" height="80" class="logo-bg pos-left"> <span class="motec">ArisDrives Motec Server</span>
+    <div class="logo-bg clearfix"><img src="https://www.assettocorsa.it/competizione/wp-content/themes/fosfostrap/_style/build/img/gtwc.png" width="140" height="80" class="logo-bg pos-left"> <span class="motec">ArisDrives Motec Server</span><img src="icon/icon.png" width="60" height="56" alt="track report" title="Track Report">
     <img src="https://www.assettocorsa.it/competizione/wp-content/themes/fosfostrap/_style/build/img/logo-acc-gtwc.png" width="250" height="80"  class="logo-bg pos-right"></div>
 <p>
-    This is an effort to build an extensive collection of motec data for as many car/track combinations as possible.    
+    This is an effort to build an extensive collection of motec data for as many car/track combinations as possible.
 </p>
 <p>
     If you would like to contribute, just zip your motec folder and upload it using the button below. <br>
@@ -25,7 +32,14 @@ Select .zip file to upload:
 <input type="file" class="btn btn-success" name="fileToUpload" id="fileToUpload">
 <input type="submit" class="btn btn-primary" value="Start Upload" name="submit" >
 </form><!-- Display upload status -->
-<div id="uploadStatus"></div>
+<!-- The Modal -->
+<div id="refreshStatus" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <p>The table has been updated...</p>
+  </div>
+
+</div>
 </div>  <!-- div id=container -->
 <!-- Progress bar -->
 <div class="progress">
@@ -35,8 +49,7 @@ Select .zip file to upload:
 <div id="donate">
     <form action="https://www.paypal.com/donate" method="post" target="_top">
         Donations go towards hosting and maintenance. And ACC DLC. <input type="hidden" name="hosted_button_id" value="RCTKH7F9FU77L" />
-    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-    <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
+    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
     </form>
 </div> <!-- div id=donate -->
 <table id="motecData" class="table is-striped table-bordered" style="width:100%">
@@ -53,45 +66,7 @@ Select .zip file to upload:
           <td> LDX Download </td>
       </tr>
     </thead>
-    <tbody>
-<?php 
-$username = "motec"; 
-$password = "motec4thepeople"; 
-$database = "motec_db"; 
-$mysqli = new mysqli("db", $username, $password, $database); 
-$query = "SELECT * FROM telemetry ORDER BY track";
 
-if ($result = $mysqli->query($query)) {
-    while ($row = $result->fetch_assoc()) {
-        $field1name = $row["track"];
-        $field2name = $row["car"];
-        $field3name = $row["date"];
-        $field4name = $row["time"];
-
-        $whole = intval($row["best_time"]); 
-        $decimal1 = $row["best_time"] - $whole; 
-        $decimal = substr($decimal1, 1, 3);
-
-        $field5name = gmdate("i:s", $row["best_time"]) . $decimal; 
-        $field6name = $row["best_lap"];
-        $field7name = $row["filename"] . '.ld';
-        $field8name = $row["filename"] . '.ldx';
-
-        echo '<tr> 
-                  <td>'.$field1name.'</td> 
-                  <td>'.$field2name.'</td> 
-                  <td>'.$field3name.'</td> 
-                  <td>'.$field4name.'</td> 
-                  <td><b>'.$field5name.'</b></td> 
-                  <td>'.$field6name.'</td> 
-                  <td><a class="btn btn-info" href="download.php?file='.$field7name.'">Download</a></td>
-                  <td><a class="btn btn-info" href="download.php?file='.$field8name.'">Download</a></td>
-              </tr>';
-    }
-    $result->free();
-} 
-?>
-</tbody>
 <tfoot>
       <tr> 
           
@@ -111,10 +86,32 @@ if ($result = $mysqli->query($query)) {
 <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready( function () {
-    $('#motecData').DataTable({ pageLength: 25 });
-} );
+    var table = $('#motecData').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": "tableViewer.php",
+        "pageLength": 25,
+        "columnDefs": [ {
+                "targets": 6,
+                "data": "filename",
+                "render": function ( data, type, row, meta ) {
+                              return '<a class="btn btn-info" href="download.php?file='+row[6]+'.ld">Download</a>';
+                            }
+          },
+          {
+                "targets": 7,
+                "data": "filename",
+                "render": function ( data, type, row, meta ) {
+                              return '<a class="btn btn-info" href="download.php?file='+row[6]+'.ldx">Download</a>';
+                            }
+          } ]
+ });
+ setInterval( function () { table.ajax.reload( refresh, false ); // user paging is not reset on reload
+                    }, 30000 );
 
-$(document).ready(function(){
+function refresh() {$("#refreshStatus").show(2000).fadeOut(1000);}
+
+
     $('.progress').hide();
     $('#uploadStatus').empty();
     // File upload via Ajax
@@ -161,10 +158,9 @@ $(document).ready(function(){
 	
     // File type validation
     $("#fileToUpload").change(function(){
-	var allowedTypes = ['application/zip', 'application/x-zip-compressed'];
+        var allowedTypes = ['application/zip', 'application/x-zip-compressed'];
         var file = this.files[0];
-	var fileType = file.type;
-	console.log(fileType);
+        var fileType = file.type;
         if(!allowedTypes.includes(fileType)){
             alert('Filetype not supported: ' + fileType);
             $("#fileToUpload").val('');
