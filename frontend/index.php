@@ -34,14 +34,10 @@ Select .zip file to upload:
 </form>
 <!-- Display upload status -->
 <div id="uploadStatus"></div>
-<!-- The Modal -->
-<div id="refreshStatus" class="modal">
-  <!-- Modal content -->
-  <div class="modal-content">
-    <p>The table has been updated...</p>
-  </div>
-
-</div>
+<!-- The DataTable Update -->
+<span id="refreshStatus" class="modal1">
+    The table has been updated...
+</span>
 </div>  <!-- div id=container -->
 <!-- Progress bar -->
 <div class="progress">
@@ -111,9 +107,9 @@ Select .zip file to upload:
  setInterval( function () { table.ajax.reload( refresh, false ); // user paging is not reset on reload
                     }, 30000 );
 
-function refresh() {$("#refreshStatus").show(2000).fadeOut(1000);}
+function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
 
-
+    $("#refreshStatus").hide();
     $('.progress').hide();
     $('#uploadStatus').empty();
     // File upload via Ajax

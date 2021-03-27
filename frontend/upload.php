@@ -26,7 +26,7 @@ function return_bytes($val) {
 
   return $bytes;
 }
-$target_dir = "/uploads";
+$target_dir = "/uploads/";
 $target_file = $target_dir . generateRandomZipfile();
 $allowTypes = array('zip');
 $uploadOk = 1;
