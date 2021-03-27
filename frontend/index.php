@@ -31,7 +31,9 @@
 Select .zip file to upload:
 <input type="file" class="btn btn-success" name="fileToUpload" id="fileToUpload">
 <input type="submit" class="btn btn-primary" value="Start Upload" name="submit" >
-</form><!-- Display upload status -->
+</form>
+<!-- Display upload status -->
+<div id="uploadStatus"></div>
 <!-- The Modal -->
 <div id="refreshStatus" class="modal">
   <!-- Modal content -->
