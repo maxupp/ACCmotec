@@ -81,7 +81,7 @@ if ($uploadOk == 0) {
           $status['message'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be processed and available shortly. Thank you for your contribution!";
         } else {
           $status['response'] = 'err';
-          $status['message'] = response['response']['report'];
+          $status['message'] = $response['response']['report'];
         }
     }
   }

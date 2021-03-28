@@ -139,7 +139,9 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
             beforeSend: function(){
                 $(".progress-bar").width('0%');
             },
-            error:function(){
+            error:function(xhr, status, error){
+                alert(status);
+                alert(error);
                 $('#uploadStatus').html('<p style="color:#EA4335;">File upload failed, please try again.</p>');
             },
             success: function(data){
