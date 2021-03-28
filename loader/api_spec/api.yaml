@@ -9,7 +9,7 @@ paths:
     post:
       summary: "Signal the server about the arrival of a new zipfile"
       description: ""
-      operationId: "process_uploaded_zip"
+      operationId: "dataloader.process_uploaded_zip"
       requestBody:
         required: true
         content:
@@ -23,7 +23,7 @@ paths:
           content:
             application/json:
               schema:
-                x-bofy-name: process_result
+                x-body-name: process_result
                 $ref: '#/components/schemas/ProcessZipResponse'
 
 components:

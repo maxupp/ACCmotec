@@ -56,7 +56,9 @@ def get_fastest_lap_from_ld(ld_path, track):
     return fastest_time, fastest_lap
 
 
-def process_uploaded_zip(file):
+def process_uploaded_zip(body):
+    logging.info(str(body))
+    file = body['filename']
     upload_dir = Path(os.environ['UPLOADS_PATH'])
 
     report = ''
@@ -108,7 +110,7 @@ def process_uploaded_zip(file):
         else:
             success = False
 
-    return success, report
+    return {'success': success, 'report': report}
 
 
 def read_motec_files(motec_path):

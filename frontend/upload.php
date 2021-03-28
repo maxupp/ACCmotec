@@ -1,4 +1,6 @@
 <?php
+header("Content-Type: text/plain");
+require_once('curlAPI.php');
 
 function generateRandomZipfile($length = 10) {
   $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -47,7 +49,6 @@ if (file_exists($target_file)) {
 // Check file size
 if ($_FILES["fileToUpload"]["size"] > return_bytes(ini_get('post_max_size'))) {  //500Mb  - 524288000
   $status['message'] = "Sorry, your file is too large.";
-
   $uploadOk = 0;
 }
 
@@ -64,14 +65,52 @@ if ($uploadOk == 0) {
 } else {
   if(in_array($fileType, $allowTypes)) {
     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-      $status['response'] = 'ok';
-      $status['message'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be processed and available shortly. Thank you for your contribution!";
-    } else {
-      $status['response'] = 'err';
-      $status['message'] = "Sorry, there was an error uploading your file.";
-    }
+       $data_array = array("filename" => $target_file);
+
+      //  try {
+      //   $response_raw = callAPI('POST', 'loader:1337/process_zip', json_encode($data_array));
+      // } catch (Exception $e){          
+      //   $status['response'] = 'err';
+      //   $status['message'] = 'api call failed';
+      // }
+
+      // try {
+      //   $response = json_decode($response_raw, true);
+
+      //   if ($response['success']) {
+      //     $status['response'] = 'ok';
+      //     $status['message'] = "Debug: " . $response['success'] . " / " . $response['report'] . "-" . "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be available in the next few minutes. Thank you for your contribution!";
+      //   } else {
+      //     $status['response'] = 'err';
+      //     $status['message'] = "Debug: " . $response['success'] . " / " . $response['report'] . "-" . $response['report'] . "-";
+      //   }
+      // } catch (Exception $e){          
+      //   $status['response'] = 'err';
+      //   $status['message'] = "Debug: " . $response['success'] . " / " . $response['report'] . "-" . $response_raw . "-";
+      // }
+      //}
+        $make_call = callAPI('POST', 'loader:1337/process_zip', json_encode($data_array));
+        $response = json_decode($make_call, true);
+
+       // $response = array(
+       //    "response"         => array(
+       //          "success"         => True
+       //          )
+       //    );
+        if ($response['success']) {
+          $status['response'] = 'ok';
+          $status['message'] = "Debug-ok: " . $response['success'] . " Report: " . $response['report'] ." - The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be available in the next few minutes. Thank you for your contribution!";
+        } else {
+          $status['response'] = 'err';
+          $status['message'] = "Debug-err: " . $response['success'] . " / " . $response['report'] . "-";
+        }
+      } else {
+        $status['response'] = 'err';
+        $status['message'] = "Sorry, there was an error uploading your file.";
+      }
   }
 }
+
 header('Access-Control-Allow-Origin: *');
 header('Content-type: application/json');
 echo json_encode($status);
