@@ -1,4 +1,5 @@
 <?php
+require('curlAPI.php');
 
 function generateRandomZipfile($length = 10) {
   $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -63,12 +64,25 @@ if ($uploadOk == 0) {
 // if everything is ok, try to upload file
 } else {
   if(in_array($fileType, $allowTypes)) {
-    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-      $status['response'] = 'ok';
-      $status['message'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be processed and available shortly. Thank you for your contribution!";
-    } else {
+    if (!move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
       $status['response'] = 'err';
       $status['message'] = "Sorry, there was an error uploading your file.";
+    }
+    else {
+        $data_array = array(
+            "filename" => $target_file
+        );
+
+        $make_call = callAPI('POST', 'loader:1337/process_zip', json_encode($data_array));
+        $response = json_decode($make_call, true);
+
+        if ($response['response']['success']) {
+          $status['response'] = 'ok';
+          $status['message'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be processed and available shortly. Thank you for your contribution!";
+        } else {
+          $status['response'] = 'err';
+          $status['message'] = response['response']['report'];
+        }
     }
   }
 }
