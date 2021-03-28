@@ -58,6 +58,11 @@ if($fileType != "zip") {
   $uploadOk = 0;
 }
 
+function exception_error_handler($errno, $errstr, $errfile, $errline ) {
+  throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+}
+set_error_handler("exception_error_handler");
+
 // Check if $uploadOk is set to 0 by an error
 if ($uploadOk == 0) {
   $status['response'] = 'err';
@@ -73,15 +78,26 @@ if ($uploadOk == 0) {
             "filename" => $target_file
         );
 
-        $make_call = callAPI('POST', 'loader:1337/process_zip', json_encode($data_array));
-        $response = json_decode($make_call, true);
-
-        if ($response['response']['success']) {
-          $status['response'] = 'ok';
-          $status['message'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be processed and available shortly. Thank you for your contribution!";
-        } else {
+        try {
+          $response_raw = callAPI('POST', 'loader:1337/process_zip', json_encode($data_array));
+        } catch (Exception $e){          
           $status['response'] = 'err';
-          $status['message'] = $response['response']['report'];
+          $status['message'] = 'api call failed';
+        }
+
+        try {
+          $response = json_decode($response_raw, true);
+
+          if ($response['response']['success']) {
+            $status['response'] = 'ok';
+            $status['message'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be processed and available shortly. Thank you for your contribution!";
+          } else {
+            $status['response'] = 'err';
+            $status['message'] = $response['response']['report'];
+          }
+        } catch (Exception $e){          
+          $status['response'] = 'err';
+          $status['message'] = $response_raw;
         }
     }
   }

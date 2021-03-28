@@ -139,8 +139,7 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
             beforeSend: function(){
                 $(".progress-bar").width('0%');
             },
-            error:function(xhr, status, error){
-                alert(status);
+            error: function(xhr, status, error){
                 alert(error);
                 $('#uploadStatus').html('<p style="color:#EA4335;">File upload failed, please try again.</p>');
             },
@@ -151,6 +150,7 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
                     $('.progress').hide();
                 }else if(data.response == 'err'){
                     $('#uploadStatus').html('<p style="color:#EA4335;">' + data.message + '</p>');
+                    console.log("|" + data.message + "|")
                 }
             }
         });
