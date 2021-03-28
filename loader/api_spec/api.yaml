@@ -9,7 +9,7 @@ paths:
     post:
       summary: "Signal the server about the arrival of a new zipfile"
       description: ""
-      operationId: "process_uploaded_zip"
+      operationId: "dataloader.process_uploaded_zip"
       requestBody:
         required: true
         content:

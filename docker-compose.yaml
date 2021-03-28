@@ -12,22 +12,20 @@ services:
       MYSQL_PASSWORD: motec4thepeople
     ports:
       - "3306:3306"
-    volumes:
-      - ./backend/database:/var/lib/mysql
   web:
     build:
       context: frontend
       dockerfile: Dockerfile
-    depends_on: 
-      - db
     expose:
       - 80
     volumes:
       - ./frontend/:/var/www/html/
       - /var/lib/motec:/srv/motec_data
       - /var/lib/motec_upload:/uploads
-    environment:
-      VIRTUAL_HOST: motec.ascaroth.de
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`motec.localhost`)"
+      - "traefik.http.routers.web.entrypoints=web"
   loader:
     build:
       context: ./loader
@@ -45,8 +43,21 @@ services:
       - /var/lib/motec:/motec_data
       - /var/log/:/var/log/
       - /var/lib/motec_upload:/uploads
-
-networks:
-  default:
-    external:
-      name: nginx-proxy
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.4
+    # Enables the web UI and tells Traefik to listen to docker
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
