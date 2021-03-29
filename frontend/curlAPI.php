@@ -29,7 +29,7 @@ function callAPI($method, $url, $data){
  
  
     //additional options
-    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
+//    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 300);  // Needs to be a long time if 500Mb files being uncompressed
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
    // EXECUTE:

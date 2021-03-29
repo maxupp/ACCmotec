@@ -29,14 +29,14 @@
 </p>
 <form action="upload.php" method="post" enctype="multipart/form-data" id="uploadForm">
 Select .zip file to upload:
-<input type="file" class="btn btn-success" name="fileToUpload" id="fileToUpload">
-<input type="submit" class="btn btn-primary" value="Start Upload" name="submit" >
+<input type="file"  accept=".zip" class="btn btn-success" name="fileToUpload" id="fileToUpload">
+<input type="submit" class="btn btn-primary" value="Start Upload" name="submit" id="startBtn">
 </form>
 <!-- Display upload status -->
 <div id="uploadStatus"></div>
 <!-- The DataTable Update -->
 <span id="refreshStatus" class="modal1">
-    The table has been updated...
+    The table has been refreshed...
 </span>
 </div>  <!-- div id=container -->
 <!-- Progress bar -->
@@ -104,8 +104,8 @@ Select .zip file to upload:
                             }
           } ]
  });
- setInterval( function () { table.ajax.reload( refresh, false ); // user paging is not reset on reload
-                    }, 30000 );
+// setInterval( function () { table.ajax.reload( refresh, false ); // user paging is not reset on reload
+//                    }, 30000 );
 
 function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
 
@@ -115,6 +115,8 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
     // File upload via Ajax
     $("#uploadForm").on('submit', function(e){
         e.preventDefault();
+        $("#startBtn").attr("disabled", true);
+        $('#startBtn').addClass('disabled');
         $('.progress').show();
         $('#uploadStatus').empty();
         $.ajax({
@@ -139,7 +141,8 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
             beforeSend: function(){
                 $(".progress-bar").width('0%');
             },
-            error: function(xhr, status, error){
+            error:function(xhr, status, error){
+                alert(status);
                 alert(error);
                 $('#uploadStatus').html('<p style="color:#EA4335;">File upload failed, please try again.</p>');
             },
@@ -147,11 +150,18 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
                 if(data.response == 'ok'){
                     $('#uploadForm')[0].reset();
                     $('#uploadStatus').html('<p style="color:#28A74B;">' + data.message + '</p>');
-                    $('.progress').hide();
                 }else if(data.response == 'err'){
                     $('#uploadStatus').html('<p style="color:#EA4335;">' + data.message + '</p>');
                     console.log("|" + data.message + "|")
                 }
+            },
+            complete: function() {
+                    $('.progress').hide();
+                    setInterval( function () { $('#uploadStatus').hide();  // Hide the messages after 20 sec on screen
+                            }, 20000 );
+                    table.ajax.reload( null, false );
+                    $("#startBtn").attr("disabled", false);
+                    $('#startBtn').removeClass('disabled');
             }
         });
     });
