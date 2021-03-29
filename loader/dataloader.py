@@ -24,7 +24,10 @@ def flatten_dir(destination, depth=None):
     logging.info(joined_path)
     for file_or_dir in os.listdir(joined_path):
         logging.info(file_or_dir)
-        if os.path.isfile(os.path.join(joined_path, file_or_dir)):
+        if os.path.isfile(os.path.join(joined_path, file_or_dir)):            
+            if len(depth) == 0:
+                # don't touch files at root leve
+                continue
             logging.info('File!')
             move(os.path.join(joined_path, file_or_dir), destination)
         else:
