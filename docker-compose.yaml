@@ -18,8 +18,6 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
-    depends_on: 
-      - db
     expose:
       - 80
     volumes:
