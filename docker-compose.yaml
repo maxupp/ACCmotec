@@ -11,7 +11,7 @@ services:
       MYSQL_USER: motec
       MYSQL_PASSWORD: motec4thepeople
     ports:
-      - "3306:3306"
+      - "53306:3306"
     volumes:
       - ./backend/database:/var/lib/mysql
   web:
@@ -24,10 +24,14 @@ services:
       - 80
     volumes:
       - ./frontend/:/var/www/html/
-      - /var/lib/motec:/srv/motec_data
-      - /var/lib/motec_upload:/uploads
+      - ./var/lib/motec:/srv/motec_data
+      - ./var/lib/motec_upload:/uploads
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`motec.localhost`)"
+      - "traefik.http.routers.web.entrypoints=web"
     environment:
-      VIRTUAL_HOST: motec.ascaroth.de
+      VIRTUAL_HOST: motec.localhost
   loader:
     build:
       context: ./loader
@@ -42,11 +46,21 @@ services:
       MYSQL_USER: motec
       MYSQL_PASSWORD: motec4thepeople
     volumes:
-      - /var/lib/motec:/motec_data
-      - /var/log/:/var/log/
-      - /var/lib/motec_upload:/uploads
+      - ./var/lib/motec:/motec_data
+      - ./var/log/:/var/log/
+      - ./var/lib/motec_upload:/uploads
 
-networks:
-  default:
-    external:
-      name: nginx-proxy
+  traefik:
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "9080:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
