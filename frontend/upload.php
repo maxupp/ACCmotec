@@ -100,10 +100,10 @@ if ($uploadOk == 0) {
 
         if ($response['success']) {
           $status['response'] = 'ok';
-          $status['message'] = "Debug-ok: " . $response['success'] . " Report: " . $response['report'] ." - The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be available in the next few minutes. Thank you for your contribution!";
+          $status['message'] = "Report: " . $response['report'] ." - The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be available in the next few minutes. Thank you for your contribution!";
         } else {
           $status['response'] = 'err';
-          $status['message'] = "Debug-err: " . $response['success'] . " / " . $response['report'] . "-";
+          $status['message'] = $response['report'];
         }
       } else {
         $status['response'] = 'err';

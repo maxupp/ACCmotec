@@ -4,7 +4,7 @@ import logging
 import glob
 import time
 from pathlib import Path
-from shutil import move
+from shutil import copy, move
 from zipfile import ZipFile
 
 import numpy as np
@@ -15,6 +15,21 @@ from ldparser import ldHead, laps, laps_times
 logging.basicConfig(filename='/var/log/motec_loader.log',level=logging.INFO,
         format='%(asctime)s : %(message)s',
         datefmt='%d.%m.%Y %I:%M:%S %p')
+
+
+def flatten_dir(destination, depth=None):
+    if not depth:
+        depth = []
+    joined_path = os.path.join(*([destination] + depth))
+    logging.info(joined_path)
+    for file_or_dir in os.listdir(joined_path):
+        logging.info(file_or_dir)
+        if os.path.isfile(os.path.join(joined_path, file_or_dir)):
+            logging.info('File!')
+            move(os.path.join(joined_path, file_or_dir), destination)
+        else:
+            logging.info('Dir!')
+            flatten_dir(destination, depth + [file_or_dir])
 
 
 def get_fastest_lap_from_ld(ld_path, track):
@@ -66,12 +81,18 @@ def process_uploaded_zip(body):
 
     # extract all files to temp dir
     with tempfile.TemporaryDirectory() as temp:
-        with ZipFile(str(upload_dir / file)) as zf:
-            zf.extractall(temp)
+        try:
+            with ZipFile(str(upload_dir / file)) as zf:
+                zf.extractall(temp)
+        except:
+            return {'success': False, 'report': 'ZipFile could not be extracted, bad format?'}
+
+        # flatten tempdir, so we don't have to deal with dir trees
+        flatten_dir(temp)
 
         # find ld and ldx files in temp dir
-        lds = glob.glob(str(Path(temp) / '*.ld'))
-        ldxs = glob.glob(str(Path(temp) / '*.ldx'))
+        lds = Path(temp).rglob('*.ld')
+        ldxs = Path(temp).rglob('*.ldx')
 
         # check for mismatched or unmatched files
         ld_stems = set([Path(x).stem for x in lds])
@@ -80,34 +101,43 @@ def process_uploaded_zip(body):
         mismatched = ldx_stems.symmetric_difference(ld_stems)
 
         if mismatched:
-            report += 'Missing either ld or ldx:\n'
+            report += 'Missing either ld or ldx:<br>'
             for m in mismatched:
-                report += f'\t{m}'
+                report += f'\t{m}<br>'
 
         # check the remaining names for parsability
-        common_names = set(ld_stems).intersection(set(ldx_stems))
+        common_names = set(ld_stems).intersection(set(ldx_stems))        
+        logging.info(f'Matching names: {len(common_names)}')
+
 
         names_to_copy = []
         for name in common_names:
             parts = name.split('-')
             if len(parts) != 5:
-                report += f'Invalid filename: {name}'
+                report += f'Invalid filename: {name}<br>'
             else:
                 names_to_copy.append(name)
+		
+        logging.info(f'Files to move: {len(names_to_copy)}')
+
+        logging.info(os.listdir(temp))
 
         # copy valid pairs to motec dir
         motec_dir = Path(os.environ['MOTEC_PATH'])
         for name in names_to_copy:
             src = str(Path(temp) / name)
             dst = str(motec_dir / name)
-            move(src + '.ld', dst + '.ld')
-            move(src + '.ldx', dst + '.ldx')
+            copy(src + '.ld', dst + '.ld')
+            copy(src + '.ldx', dst + '.ldx')
+		
+        logging.info(f'Reached returning, report: {report}')
 
         if report == '':
             update_index()
             report += f'Successfully imported {len(names_to_copy)} files.'
             success = True
         else:
+            report += 'No files were imported.'
             success = False
 
     return {'success': success, 'report': report}
