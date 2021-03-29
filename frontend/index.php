@@ -124,7 +124,6 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
         $("#startBtn").attr("disabled", true);
         $("#startBtn").addClass('disabled');
         $("#startBtn").val('Uploading...');
-        $("#startSpinner").show();
         $('.progress').show();
         $('#uploadStatus').empty();
         $.ajax({
@@ -137,10 +136,13 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
                         $(".progress-bar").html(percentComplete+'%');
                     }
                     if (percentComplete < 100) {
-                        $('#uploadStatus').html("We are uploading your ZIP file.");
+                        $('#uploadStatus').html('<p style="color:#0069d9;">' + 'We are uploading your ZIP file.</p>');
                     }
                     else {
-                        $('#uploadStatus').empty().html("Upload Complete.  Unpacking, verifying and addition to the dB in the next few moments.");
+                        $('.progress').hide();
+                        $('#uploadStatus').empty().html('<p style="color:#0069d9;">' + 'Upload Complete.  Unpacking, verifying and addition to the dB in the next few moments.</p>');
+                        $("#startBtn").val('Processing...');
+                        $("#startSpinner").show();
                     }
                 }, false);
                 return xhr;
