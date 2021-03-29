@@ -166,8 +166,9 @@ def read_motec_files(motec_path):
         best_time, best_lap = get_fastest_lap_from_ld(motec_path / name, track)
         if best_time is None:
             # No valid laps in this motec log
+            logging.warning(f'No valid laptime found in {name}')
             continue
-
+            
         time = time.replace('.', ':')
     
         meta_data.append({
