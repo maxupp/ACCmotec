@@ -136,6 +136,12 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
                         $(".progress-bar").width(percentComplete + '%');
                         $(".progress-bar").html(percentComplete+'%');
                     }
+                    if (percentComplete < 100) {
+                        $('#uploadStatus').html("We are uploading your ZIP file.");
+                    }
+                    else {
+                        $('#uploadStatus').empty().html("Upload Complete.  Unpacking, verifying and addition to the dB in the next few moments.");
+                    }
                 }, false);
                 return xhr;
             },
@@ -160,7 +166,6 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
                     $('#uploadStatus').html('<p style="color:#28A74B;">' + data.message + '</p>');
                 }else if(data.response == 'err'){
                     $('#uploadStatus').html('<p style="color:#EA4335;">' + data.message + '</p>');
-                    console.log("|" + data.message + "|")
                 }
             },
             complete: function() {
