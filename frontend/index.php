@@ -152,6 +152,7 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
                     $('#uploadStatus').html('<p style="color:#28A74B;">' + data.message + '</p>');
                 }else if(data.response == 'err'){
                     $('#uploadStatus').html('<p style="color:#EA4335;">' + data.message + '</p>');
+                    console.log("|" + data.message + "|")
                 }
             },
             complete: function() {

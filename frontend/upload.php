@@ -2,6 +2,7 @@
 header("Content-Type: text/plain");
 require_once('curlAPI.php');
 
+
 function generateRandomZipfile($length = 10) {
   $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $charactersLength = strlen($characters);
@@ -58,6 +59,11 @@ if($fileType != "zip") {
   $uploadOk = 0;
 }
 
+function exception_error_handler($errno, $errstr, $errfile, $errline ) {
+  throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+}
+set_error_handler("exception_error_handler");
+
 // Check if $uploadOk is set to 0 by an error
 if ($uploadOk == 0) {
   $status['response'] = 'err';
@@ -92,11 +98,6 @@ if ($uploadOk == 0) {
         $make_call = callAPI('POST', 'loader:1337/process_zip', json_encode($data_array));
         $response = json_decode($make_call, true);
 
-       // $response = array(
-       //    "response"         => array(
-       //          "success"         => True
-       //          )
-       //    );
         if ($response['success']) {
           $status['response'] = 'ok';
           $status['message'] = "Debug-ok: " . $response['success'] . " Report: " . $response['report'] ." - The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be available in the next few minutes. Thank you for your contribution!";
