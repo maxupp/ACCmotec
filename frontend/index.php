@@ -172,6 +172,7 @@ function refresh() { $("#refreshStatus").show(2000).fadeOut(1000); }
             },
             complete: function() {
                     $('.progress').hide();
+                    $('#uploadStatus').show();
                     setInterval( function () { $('#uploadStatus').hide();  // Hide the messages after 20 sec on screen
                             }, 20000 );
                     table.ajax.reload( null, false );
