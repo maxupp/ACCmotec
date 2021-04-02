@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ArisDrives Motec Server</title>
     <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
     <link rel="manifest" href="icon/site.webmanifest">
 
-    <link rel="stylesheet" href="css/style.css" >
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" >
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" >
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" >
+    <link rel="stylesheet" href="css/style.css" >
 </head>
 <body>
     <div id="container" class="jumbotron">
@@ -53,6 +53,7 @@ Select .zip file to upload:
     <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
     </form>
 </div> <!-- div id=donate -->
+<p>Use the Download button to retrieve the specific ld and ldx in zip format.</p>
 <table id="motecData" class="table is-striped table-bordered" style="width:100%">
     <thead>
       <tr> 
@@ -64,7 +65,6 @@ Select .zip file to upload:
           <td> Best Laptime </td> 
           <td> Best Lap </td>
           <td> Motec Download </td>
-          <td> LDX Download </td>
       </tr>
     </thead>
 
@@ -78,12 +78,12 @@ Select .zip file to upload:
           <td> Best Laptime </td> 
           <td> Best Lap </td>
           <td> Motec Download </td>
-          <td> LDX Download </td>
       </tr>
 </tfoot>
 </table>
 <!-- This is where the jQuery should be placed  -->
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 <script src="js/app.js"></script>
 </body>

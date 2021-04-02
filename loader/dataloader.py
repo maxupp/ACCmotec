@@ -88,7 +88,7 @@ def process_uploaded_zip(body):
             with ZipFile(str(upload_dir / file)) as zf:
                 zf.extractall(temp)
         except:
-            return {'success': False, 'report': 'ZipFile could not be extracted, bad format?'}
+            return {'success': 'failure', 'report': 'ZipFile could not be extracted, bad format?'}
 
         # flatten tempdir, so we don't have to deal with dir trees
         flatten_dir(temp)
@@ -112,7 +112,6 @@ def process_uploaded_zip(body):
         common_names = set(ld_stems).intersection(set(ldx_stems))        
         logging.info(f'Matching names: {len(common_names)}')
 
-
         names_to_copy = []
         for name in common_names:
             parts = name.split('-')
@@ -120,30 +119,37 @@ def process_uploaded_zip(body):
                 report += f'Invalid filename: {name}<br>'
             else:
                 names_to_copy.append(name)
-		
+
         logging.info(f'Files to move: {len(names_to_copy)}')
 
         logging.info(os.listdir(temp))
 
-        # copy valid pairs to motec dir
+        # copy valid pairs to motec dir, let user know what was added and include in dB
         motec_dir = Path(os.environ['MOTEC_PATH'])
         for name in names_to_copy:
             src = str(Path(temp) / name)
             dst = str(motec_dir / name)
             copy(src + '.ld', dst + '.ld')
             copy(src + '.ldx', dst + '.ldx')
-		
-        logging.info(f'Reached returning, report: {report}')
+
+        update_index()
 
         if report == '':
-            update_index()
-            report += f'Successfully imported {len(names_to_copy)} files.'
-            success = True
+            result = 'success'
+            report += f'Successfully imported {len(names_to_copy)} files:<br>'
+            report += '<br>'.join(names_to_copy)
         else:
-            report += 'No files were imported.'
-            success = False
+            # we had some errors
+            if names_to_copy:
+                # some files were okay
+                result = 'partial'
+                report += f'Successfully imported {len(names_to_copy)} files:<br>'
+                report += '<br>'.join(names_to_copy)
+            else:
+                result = 'failure'
+                report += 'No files could be imported.'
 
-    return {'success': success, 'report': report}
+    return {'result': result, 'report': report}
 
 
 def read_motec_files(motec_path):

@@ -37,7 +37,7 @@ $fileType = strtolower(pathinfo(basename($_FILES["fileToUpload"]["name"]), PATHI
 
 // Prepare JSON to inform user if the file uploaded successfully or alternatively what the error was
 $status = [
-  'response' => 'err',
+  'response' => 'bad',
   'message'  => '-'
 ];
 
@@ -66,49 +66,39 @@ set_error_handler("exception_error_handler");
 
 // Check if $uploadOk is set to 0 by an error
 if ($uploadOk == 0) {
-  $status['response'] = 'err';
+  $status['response'] = 'bad';
 // if everything is ok, try to upload file
 } else {
   if(in_array($fileType, $allowTypes)) {
     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-       $data_array = array("filename" => $target_file);
+      $data_array = array("filename" => $target_file);
 
-      //  try {
-      //   $response_raw = callAPI('POST', 'loader:1337/process_zip', json_encode($data_array));
-      // } catch (Exception $e){          
-      //   $status['response'] = 'err';
-      //   $status['message'] = 'api call failed';
-      // }
-
-      // try {
-      //   $response = json_decode($response_raw, true);
-
-      //   if ($response['success']) {
-      //     $status['response'] = 'ok';
-      //     $status['message'] = "Debug: " . $response['success'] . " / " . $response['report'] . "-" . "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be available in the next few minutes. Thank you for your contribution!";
-      //   } else {
-      //     $status['response'] = 'err';
-      //     $status['message'] = "Debug: " . $response['success'] . " / " . $response['report'] . "-" . $response['report'] . "-";
-      //   }
-      // } catch (Exception $e){          
-      //   $status['response'] = 'err';
-      //   $status['message'] = "Debug: " . $response['success'] . " / " . $response['report'] . "-" . $response_raw . "-";
-      // }
-      //}
-        $make_call = callAPI('POST', 'loader:1337/process_zip', json_encode($data_array));
-        $response = json_decode($make_call, true);
-
-        if ($response['success']) {
-          $status['response'] = 'ok';
-          $status['message'] = "Report: " . $response['report'] ." - The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. It will be available in the next few minutes. Thank you for your contribution!";
-        } else {
-          $status['response'] = 'err';
-          $status['message'] = $response['report'];
-        }
-      } else {
-        $status['response'] = 'err';
-        $status['message'] = "Sorry, there was an error uploading your file.";
+      try {
+        $response_raw = callAPI('POST', 'loader:1337/process_zip', json_encode($data_array));
+      } catch (Exception $e){
+        $status['response'] = 'bad';
+        $status['message'] = 'Could not reach api server';
       }
+
+        $response = json_decode($response_raw, true);
+
+        switch ($response['result']){
+            case "success" :
+              $status['response'] = 'good';
+              $status['message'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])) . " has been uploaded. Thank you for your contribution." . $response['report'];
+              break;
+            case "failure" :
+              $status['response'] = 'bad';
+              $status['message'] = $response['report'];
+              break;
+            case "partial" :
+              $status['response'] = 'part';
+              $status['message'] = $response['report'];
+              break;
+            default:
+              break;
+        }
+    }
   }
 }
 
