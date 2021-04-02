@@ -4,4 +4,7 @@ COPY pdo_mysql.ini /usr/local/etc/conf.d/pdo_mysql.ini
 RUN php -i
 RUN chown www-data /var/www/html
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-RUN docker-php-ext-install pdo_mysql mysqli
+RUN apt-get update && apt-get install -y \
+        libzip-dev \
+        zip \
+  && docker-php-ext-install zip pdo_mysql mysqli
