@@ -8,7 +8,7 @@ app = connexion.FlaskApp(
 app.add_api("api.yaml", strict_validation=True)
 
 # wait a while for db server to be up and running, then update index once
-time.sleep(30)
+time.sleep(20)
 dataloader.update_index()
 
 app.run(server='tornado', port=1337)

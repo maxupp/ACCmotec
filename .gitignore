@@ -1,2 +1,5 @@
 motec_data
 .idea
+var
+docker-compose.yaml
+backend/database

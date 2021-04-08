@@ -1,0 +1,56 @@
+body {
+	color: #000;
+	font: 100%/30px 'Helvetica Neue', helvetica, arial, sans-serif;
+	margin-left: 20px;
+	padding-left: 40px;
+	padding-right: 40px;
+}
+
+.motec{
+  color: #fff;
+	font: 60px 'Helvetica Neue', helvetica, arial, sans-serif;
+	text-align: center;
+}
+
+.jumbotron {
+	margin-top: 10px;
+	text-align: center;
+}
+
+#donate {
+	float: right;
+	text-align: right;
+	width: 600px;
+}
+
+.logo-bg {
+
+	background-color: #000;
+}
+
+.pos-left {
+	float: left;
+}
+
+.pos-right {
+	float: right;
+}
+
+.clearfix::after {
+	content: "";
+	clear: both;
+}
+
+.message {
+	font: 20px 'Helvetica Neue', helvetica, arial, sans-serif;
+	text-align: center;
+}
+.info {
+	color:#0069d9;
+}
+.success {
+	color:#28A74B;
+}
+.error {
+	color:#EA4335;
+}

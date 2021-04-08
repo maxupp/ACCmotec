@@ -4,7 +4,7 @@ import logging
 import glob
 import time
 from pathlib import Path
-from shutil import move
+from shutil import copy, move
 from zipfile import ZipFile
 
 import numpy as np
@@ -15,6 +15,24 @@ from ldparser import ldHead, laps, laps_times
 logging.basicConfig(filename='/var/log/motec_loader.log',level=logging.INFO,
         format='%(asctime)s : %(message)s',
         datefmt='%d.%m.%Y %I:%M:%S %p')
+
+
+def flatten_dir(destination, depth=None):
+    if not depth:
+        depth = []
+    joined_path = os.path.join(*([destination] + depth))
+    logging.info(joined_path)
+    for file_or_dir in os.listdir(joined_path):
+        logging.info(file_or_dir)
+        if os.path.isfile(os.path.join(joined_path, file_or_dir)):            
+            if len(depth) == 0:
+                # don't touch files at root leve
+                continue
+            logging.info('File!')
+            move(os.path.join(joined_path, file_or_dir), destination)
+        else:
+            logging.info('Dir!')
+            flatten_dir(destination, depth + [file_or_dir])
 
 
 def get_fastest_lap_from_ld(ld_path, track):
@@ -56,7 +74,9 @@ def get_fastest_lap_from_ld(ld_path, track):
     return fastest_time, fastest_lap
 
 
-def process_uploaded_zip(file):
+def process_uploaded_zip(body):
+    logging.info(str(body))
+    file = body['filename']
     upload_dir = Path(os.environ['UPLOADS_PATH'])
 
     report = ''
@@ -64,12 +84,18 @@ def process_uploaded_zip(file):
 
     # extract all files to temp dir
     with tempfile.TemporaryDirectory() as temp:
-        with ZipFile(str(upload_dir / file)) as zf:
-            zf.extractall(temp)
+        try:
+            with ZipFile(str(upload_dir / file)) as zf:
+                zf.extractall(temp)
+        except:
+            return {'success': 'failure', 'report': 'ZipFile could not be extracted, bad format?'}
+
+        # flatten tempdir, so we don't have to deal with dir trees
+        flatten_dir(temp)
 
         # find ld and ldx files in temp dir
-        lds = glob.glob(str(Path(temp) / '*.ld'))
-        ldxs = glob.glob(str(Path(temp) / '*.ldx'))
+        lds = Path(temp).rglob('*.ld')
+        ldxs = Path(temp).rglob('*.ldx')
 
         # check for mismatched or unmatched files
         ld_stems = set([Path(x).stem for x in lds])
@@ -78,37 +104,52 @@ def process_uploaded_zip(file):
         mismatched = ldx_stems.symmetric_difference(ld_stems)
 
         if mismatched:
-            report += 'Missing either ld or ldx:\n'
+            report += 'Missing either ld or ldx:<br>'
             for m in mismatched:
-                report += f'\t{m}'
+                report += f'\t{m}<br>'
 
         # check the remaining names for parsability
-        common_names = set(ld_stems).intersection(set(ldx_stems))
+        common_names = set(ld_stems).intersection(set(ldx_stems))        
+        logging.info(f'Matching names: {len(common_names)}')
 
         names_to_copy = []
         for name in common_names:
             parts = name.split('-')
             if len(parts) != 5:
-                report += f'Invalid filename: {name}'
+                report += f'Invalid filename: {name}<br>'
             else:
                 names_to_copy.append(name)
 
-        # copy valid pairs to motec dir
+        logging.info(f'Files to move: {len(names_to_copy)}')
+
+        logging.info(os.listdir(temp))
+
+        # copy valid pairs to motec dir, let user know what was added and include in dB
         motec_dir = Path(os.environ['MOTEC_PATH'])
         for name in names_to_copy:
             src = str(Path(temp) / name)
             dst = str(motec_dir / name)
-            move(src + '.ld', dst + '.ld')
-            move(src + '.ldx', dst + '.ldx')
+            copy(src + '.ld', dst + '.ld')
+            copy(src + '.ldx', dst + '.ldx')
+
+        update_index()
 
         if report == '':
-            update_index()
-            report += f'Successfully imported {len(names_to_copy)} files.'
-            success = True
+            result = 'success'
+            report += f'Successfully imported {len(names_to_copy)} files:<br>'
+            report += '<br>'.join(names_to_copy)
         else:
-            success = False
+            # we had some errors
+            if names_to_copy:
+                # some files were okay
+                result = 'partial'
+                report += f'Successfully imported {len(names_to_copy)} files:<br>'
+                report += '<br>'.join(names_to_copy)
+            else:
+                result = 'failure'
+                report += 'No files could be imported.'
 
-    return success, report
+    return {'result': result, 'report': report}
 
 
 def read_motec_files(motec_path):
@@ -134,8 +175,9 @@ def read_motec_files(motec_path):
         best_time, best_lap = get_fastest_lap_from_ld(motec_path / name, track)
         if best_time is None:
             # No valid laps in this motec log
+            logging.warning(f'No valid laptime found in {name}')
             continue
-
+            
         time = time.replace('.', ':')
     
         meta_data.append({
